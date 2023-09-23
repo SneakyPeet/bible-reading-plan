@@ -7,6 +7,7 @@
 (defonce *app-state (r/atom {}))
 
 
+
 (defn- calculate-stats! [day]
   (let [stats (bible/get-daily-stats day)]
     (reset! *app-state {:day   day
@@ -24,7 +25,3 @@
 (defn set-day! [day]
   (storage/set-day! day)
   (calculate-stats! day))
-
-(defn increment-day! [])
-
-(defn decrement-day! [])

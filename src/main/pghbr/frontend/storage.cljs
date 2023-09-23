@@ -1,13 +1,14 @@
 (ns pghbr.frontend.storage)
 
 (def ^:private localstorage-key "pghbr-day")
-(def ^:private default-start-day 1)
+(def ^:private default-start-day "1")
 
 
 (defn get-day []
-  (try
-    (or (js/localStorage.getItem localstorage-key) default-start-day)
-    (catch :default _ default-start-day)))
+  (js/parseInt
+    (try
+      (or (js/localStorage.getItem localstorage-key) default-start-day)
+      (catch :default _ default-start-day))))
 
 
 (defn set-day! [day]

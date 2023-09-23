@@ -44,7 +44,7 @@
    [41 "Mark" "Mark" 16]
    [42 "Luke" "Luke" 24]
    [43 "John" "John" 21]
-   [44 "Acts of the Apostles" "Acts" 28]
+   [44 "Acts" "Acts" 28]
    [45 "Romans" "Rom" 16]
    [46 "1 Corinthians" "1 Cor" 16]
    [47 "2 Corinthians" "2 Cor" 13]
@@ -66,7 +66,7 @@
    [63 "2 John" "2 John" 1]
    [64 "3 John" "3 John" 1]
    [65 "Jude" "Jude" 1]
-   [66 "Revelation (to John)" "Rev" 22]])
+   [66 "Revelation" "Rev" 22]])
 
 
 (def reading-lists
@@ -141,9 +141,8 @@
 
   ;; LIST BOOK CHAPTERS AS EXPECTED
 
-  (let [actual 
+  (let [actual
         (map second list-book-chapters)]
     (= expected-list-lengths actual))
 
   ,)
-
