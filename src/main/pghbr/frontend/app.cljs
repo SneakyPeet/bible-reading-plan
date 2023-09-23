@@ -1,14 +1,29 @@
-(ns pghbr.frontend.app)
-
-(def ^:private localstorage-key "pghbr-day")
-(def ^:private default-start-day 1)
-
-
-(defn- get-day-from-storage []
-  (try
-    (or (js/localStorage.getItem localstorage-key) default-start-day)
-    (catch :default _ default-start-day)))
+(ns pghbr.frontend.app
+  (:require [reagent.core :as r]
+            [goog.dom :as gdom]
+            ["react-dom/client" :refer [createRoot]]
+            [pghbr.frontend.state :as app-state]
+            [pghbr.frontend.components :as components]))
 
 
-(defn init []
-  (prn (get-day-from-storage)))
+(def ^:private root-element-id "root")
+
+(defonce root (createRoot (gdom/getElement root-element-id)))
+
+
+(defn view []
+  []
+  [components/page (app-state/get-app-state!)])
+
+(defn render! []
+  (.render root (r/as-element [view])))
+
+
+(defn init! []
+  (app-state/init!)
+  (render!))
+
+
+(defn ^:dev/after-load re-render!
+  []
+  (render!))

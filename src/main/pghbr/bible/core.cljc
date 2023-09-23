@@ -31,8 +31,9 @@
                                      (map :total-times-list-read)
                                      sort
                                      first)]
-    {:total-times-bible-read times-entire-bible-read
-     :total-times-books-read 
+    {:reading-list reading-lists
+     :total-times-bible-read times-entire-bible-read
+     :total-times-books-read
      (->> reading-lists
           (map (fn [{:keys [list-index book-number total-times-book-read]}]
                  (let [list-books   (nth config/reading-lists list-index)
@@ -63,7 +64,4 @@
                            :read-counts          []})
                         :read-counts))))
           (reduce into)
-          (sort-by first))
-     :reading-list reading-lists}))
-
-
+          (sort-by first))}))
