@@ -12,6 +12,15 @@
   (reset! *page ::reading))
 
 
+(def ^:private day-options
+  (let [start-day        1
+        days-in-year     365
+        years-selectable 20]
+    (->> (range start-day (* days-in-year years-selectable))
+         (map (fn [n]
+                [:option {:value n} (str n)])))))
+
+
 (defn- day-selection [day]
   (let [col-style {:display "flex" :justify-content "center" :padding "0"}]
     [:div.row
@@ -22,7 +31,12 @@
       [:button.btn-small {:on-click #(events/set-day! (dec day))} "<"]]
 
      [:div.col-6.col {:style col-style}
-      [:input {:type      "number"
+      [:select {:value day
+                :on-change #(events/set-day! (.. % -target -value))
+                :style     {:max-height "2.1rem"
+                            :max-width  "5rem"} }
+                (into [:<>] day-options)]
+      #_[:input {:type      "number"
                :value     day
                :min       1
                :on-change #(events/set-day! (js/parseInt (.. % -target -value)))
@@ -101,7 +115,8 @@
    [:ul
     [:li "Clojurescript"]
     [:li [:a {:href "https://shadow-cljs.github.io/"} "Shaddow-cljs"]]
-    [:li [:a {:href "https://www.getpapercss.com/"} "Paper Css"]]]])
+    [:li [:a {:href "https://www.getpapercss.com/"} "Paper Css"]]]
+   [:small.text-understated "v1.1"]])
 
 
 (defn- about-page []
