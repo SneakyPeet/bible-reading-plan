@@ -16,3 +16,10 @@
     (js/localStorage.setItem localstorage-key day)
     (catch :default e
       (js/console.log e))))
+
+
+(defn clear-storage! []
+  (try
+    (js/localStorage.clear)
+    (catch :default e
+      (js/console.log e))))
