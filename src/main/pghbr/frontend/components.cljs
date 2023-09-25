@@ -12,13 +12,24 @@
   (reset! *page ::reading))
 
 
-(def ^:private day-options
-  (let [start-day        1
-        days-in-year     365
-        years-selectable 20]
-    (->> (range start-day (* days-in-year years-selectable))
-         (map (fn [n]
-                [:option {:value n} (str n)])))))
+(defn- day-options [current-day]
+  (let [start-day       (max (- current-day 50) 2)
+        selectable-days 100
+        default-ranges  (->> (range start-day (+ start-day selectable-days))
+                            (map (fn [n]
+                                   [:option {:key (str "o" n) :value n} (str "Day " n)])))
+        years            (->> [1 2 3 4 5]
+                              (map (juxt identity #(* 365 %)))
+                              (filter #(not= (last %) current-day))
+                              (map (fn [[y days]]
+                                     [:option {:key   (str "y" y)
+                                               :value days}
+                                      (str "Year " y)]))
+                              vec)]
+
+    (->> default-ranges
+         (into years)
+         (into [[:option {:key "d1" :value 1} "Day 1"]]))))
 
 
 (defn- day-selection [day]
@@ -28,20 +39,23 @@
       [:button.btn-small {:on-click #(show-stats!)} "?"]]
 
      [:div.col-2.col {:style col-style}
-      [:button.btn-small {:on-click #(events/set-day! (dec day))} "<"]]
+      [:button.btn-small {:on-click #(events/set-day! (max 1 (dec day)))} "<"]]
 
      [:div.col-6.col {:style col-style}
-      [:select {:value day
-                :on-change #(events/set-day! (.. % -target -value))
+      [:select {:value     day
+                :on-change #(let [new-day (.. % -target -value)
+                                  new-day (if (number? new-day) new-day (js/parseInt new-day))]
+                              (events/set-day! new-day))
                 :style     {:max-height "2.1rem"
-                            :max-width  "5rem"} }
-                (into [:<>] day-options)]
+                            :max-width  "7rem"
+                            :font-size  "0.9rem"} }
+       (into [:<>] (day-options day))]
       #_[:input {:type      "number"
-               :value     day
-               :min       1
-               :on-change #(events/set-day! (js/parseInt (.. % -target -value)))
-               :style     {:max-height "2.1rem"
-                           :max-width "5rem"}}]]
+                 :value     day
+                 :min       1
+                 :on-change #(events/set-day! (js/parseInt (.. % -target -value)))
+                 :style     {:max-height "2.1rem"
+                             :max-width  "5rem"}}]]
 
      [:div.col-2.col {:style col-style}
       [:button.btn-small {:on-click #(events/set-day! (inc day))} ">"]]]))
@@ -116,7 +130,7 @@
     [:li "Clojurescript"]
     [:li [:a {:href "https://shadow-cljs.github.io/"} "Shaddow-cljs"]]
     [:li [:a {:href "https://www.getpapercss.com/"} "Paper Css"]]]
-   [:small.text-understated "v1.1"]])
+   [:small.text-understated "v1.4"]])
 
 
 (defn- about-page []
