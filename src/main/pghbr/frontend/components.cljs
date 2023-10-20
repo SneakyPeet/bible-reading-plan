@@ -130,7 +130,7 @@
     [:li "Clojurescript"]
     [:li [:a {:href "https://shadow-cljs.github.io/"} "Shaddow-cljs"]]
     [:li [:a {:href "https://www.getpapercss.com/"} "Paper Css"]]]
-   [:small.text-understated "v1.4"]])
+   [:small.text-understated "v1.5"]])
 
 
 (defn- about-page []

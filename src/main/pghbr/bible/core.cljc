@@ -25,6 +25,7 @@
                                                      (double (/ chapter book-total-chapters)))}))))))
 
 
+
 (defn get-daily-stats [day]
   (let [reading-lists           (get-lists-to-read day)
         times-entire-bible-read (->> reading-lists
@@ -35,9 +36,13 @@
      :total-times-bible-read times-entire-bible-read
      :total-times-books-read
      (->> reading-lists
-          (map (fn [{:keys [list-index book-number total-times-book-read]}]
-                 (let [list-books   (nth config/reading-lists list-index)
-                       after-total  (int total-times-book-read)
+          (map (fn [{:keys [list-index book-number total-times-book-read total-chapters-book]}]
+                 (let [list-books     (nth config/reading-lists list-index)
+                       after-total    (int total-times-book-read)
+                       total-rounded? (zero? (- total-times-book-read after-total))
+                       after-total    (cond-> after-total
+                                        total-rounded?
+                                        (dec))
                        before-total (inc after-total)]
                    (->> list-books
                         (reduce
