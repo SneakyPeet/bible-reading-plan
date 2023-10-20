@@ -8,6 +8,9 @@ npx shadow-cljs watch frontend
 
 npx shadow-cljs release frontend
 
+### Deploy
+
+firebase deploy --only hosting
 
 ### Prod
 
