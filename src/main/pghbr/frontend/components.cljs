@@ -42,13 +42,14 @@
       [:button.btn-small {:on-click #(events/set-day! (max 1 (dec day)))} "<"]]
 
      [:div.col-6.col {:style col-style}
-      [:select {:value     day
-                :on-change #(let [new-day (.. % -target -value)
-                                  new-day (if (number? new-day) new-day (js/parseInt new-day))]
-                              (events/set-day! new-day))
-                :style     {:max-height "2.1rem"
-                            :max-width  "7rem"
-                            :font-size  "0.9rem"} }
+      [:select.shadow.shadow-hover
+       {:value     day
+        :on-change #(let [new-day (.. % -target -value)
+                          new-day (if (number? new-day) new-day (js/parseInt new-day))]
+                      (events/set-day! new-day))
+        :style     {:max-height "2.1rem"
+                    :max-width  "7rem"
+                    :font-size  "0.9rem"} }
        (into [:<>] (day-options day))]
       #_[:input {:type      "number"
                  :value     day
@@ -79,22 +80,31 @@
      :style {:border-right "none"}}]])
 
 
-(defn- reading-list [reading-list]
+(defn- reading-list [reading-list read-lists]
   (let [col-style {:padding-top "0" :padding-bottom "0"}]
     [:div
      (->> reading-list
           (map-indexed
             (fn [i {:keys [book chapter list-number completion-percentage-chapter completion-percentage-list total-chapters-list total-chapters-book]}]
-              [:div.row {:key i}
-               [:div.col.col-9 {:style col-style}
-                [:span list-number ". " book " " chapter]]
-               [:div.col.col-3 {:style (assoc col-style :text-align "right")}
-                [:span.text-muted {:style {:font-size "0.6rem"}}
-                 [:span.text-secondary total-chapters-book] " | "
-                 [:span.text-success total-chapters-list]]]
-               [:div.col.col-12 {:style col-style}
-                [progress-bar-book completion-percentage-chapter ""]
-                [progress-bar-list completion-percentage-list ""]]])))
+              (let [finished? (contains? read-lists i)]
+                [:div.row {:key i}
+                 [:div.col.col-9 {:style col-style}
+                  [:span list-number ". "]
+                  [:span
+                   {:class    (when finished? "text-success")
+                    :style    {:cursor "pointer"}
+                    :on-click (fn []
+                                (if finished?
+                                  (events/mark-list-unread! i)
+                                  (events/mark-list-read! i)))}
+                   book " " chapter]]
+                 [:div.col.col-3 {:style (assoc col-style :text-align "right")}
+                  [:span.text-muted {:style {:font-size "0.6rem"}}
+                   [:span.text-secondary total-chapters-book] " | "
+                   [:span.text-success total-chapters-list]]]
+                 [:div.col.col-12 {:style col-style}
+                  [progress-bar-book completion-percentage-chapter ""]
+                  [progress-bar-list completion-percentage-list ""]]]))))
      #_[:pre {:style {:white-space "break-spaces"}} (str reading-list)]]))
 
 
@@ -112,6 +122,7 @@
    [:h5 "How to use it?"]
    [:ul
     [:li "Read all 10 chapters as displayed on the page."]
+    [:li "You can click the name of a book to mark it as read."]
     [:li "Click '>' to load the chapters for the next days reading."]
     [:li "The app saves the selected day on your current device."]
     [:li "You can also type in the day you want to jump to."]
@@ -130,7 +141,7 @@
     [:li "Clojurescript"]
     [:li [:a {:href "https://shadow-cljs.github.io/"} "Shaddow-cljs"]]
     [:li [:a {:href "https://www.getpapercss.com/"} "Paper Css"]]]
-   [:small.text-understated "v1.5"]])
+   [:small.text-understated "v1.6"]])
 
 
 (defn- about-page []
@@ -203,8 +214,6 @@
                    (when (= selected-tab k)
                      f))
                  tabs)]
-    (prn selected-tab)
-    (prn render)
     [:div
      [:div.row.flex-spaces.tabs
       (->> tabs
@@ -231,7 +240,9 @@
     ::reading
     [:div
      [day-selection (:day app-state)]
-     [reading-list (get-in app-state [:stats :reading-list])]]
+     [reading-list
+      (get-in app-state [:stats :reading-list])
+      (get-in app-state [:read-lists])]]
 
     ::stats
     [help-page (:stats app-state)]
